@@ -1,0 +1,425 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Reorderly – Ihr Lager bestellt sich selbst nach</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Manrope:wght@400;500;600;700&display=swap');
+
+:root {
+  --bg: #0a0f0d;
+  --bg2: #111a15;
+  --green: #00e87a;
+  --green-dim: rgba(0,232,122,0.1);
+  --green-mid: rgba(0,232,122,0.3);
+  --white: #f0f5f2;
+  --muted: #7a9488;
+  --card: #131d18;
+  --border: #1e2e25;
+  --heading: 'Plus Jakarta Sans', system-ui, sans-serif;
+  --body: 'Manrope', system-ui, sans-serif;
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+body {
+  background: var(--bg);
+  color: var(--white);
+  font-family: var(--body);
+  font-weight: 400;
+  overflow-x: hidden;
+  line-height: 1.6;
+}
+
+/* NAV */
+nav {
+  position: fixed;
+  top: 0; left: 0; right: 0;
+  z-index: 100;
+  padding: 18px 48px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-bottom: 1px solid var(--border);
+  background: rgba(10,15,13,0.92);
+  backdrop-filter: blur(12px);
+}
+.logo { font-family: var(--heading); font-weight: 800; font-size: 22px; color: var(--white); text-decoration: none; cursor: pointer; }
+.logo span { color: var(--green); }
+.nav-links { display: flex; gap: 32px; align-items: center; }
+.nav-links a { color: var(--muted); text-decoration: none; font-size: 14px; font-weight: 500; transition: color 0.2s; }
+.nav-links a:hover { color: var(--white); }
+.btn-nav { background: var(--green) !important; color: #000 !important; padding: 10px 22px; border-radius: 6px; font-weight: 700 !important; }
+
+/* HERO */
+.hero {
+  min-height: 100vh;
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  padding: 120px 24px 80px;
+  text-align: center;
+  position: relative;
+}
+.hero-glow {
+  position: absolute; top: 20%; left: 50%; transform: translateX(-50%);
+  width: 700px; height: 500px;
+  background: radial-gradient(circle, rgba(0,232,122,0.07) 0%, transparent 70%);
+  pointer-events: none;
+}
+.badge {
+  display: inline-flex; align-items: center; gap: 8px;
+  background: var(--green-dim); border: 1px solid var(--green-mid);
+  color: var(--green); padding: 6px 16px; border-radius: 100px;
+  font-size: 13px; font-weight: 600; margin-bottom: 32px;
+}
+.badge-dot { width: 6px; height: 6px; background: var(--green); border-radius: 50%; animation: pulse 2s infinite; }
+@keyframes pulse { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:.5;transform:scale(1.4)} }
+
+h1 {
+  font-family: var(--heading); font-weight: 800;
+  font-size: clamp(40px, 6.5vw, 82px);
+  line-height: 1.05; letter-spacing: -2px;
+  max-width: 900px; margin-bottom: 24px;
+}
+h1 em { font-style: normal; color: var(--green); }
+.hero-sub { font-size: clamp(16px, 2vw, 19px); color: var(--muted); max-width: 560px; line-height: 1.7; margin-bottom: 48px; }
+.hero-cta { display: flex; gap: 16px; justify-content: center; flex-wrap: wrap; }
+
+.btn-primary {
+  background: var(--green); color: #000;
+  padding: 16px 36px; border-radius: 8px;
+  font-family: var(--heading); font-weight: 700; font-size: 16px;
+  text-decoration: none; display: inline-block;
+  transition: transform 0.2s, box-shadow 0.2s;
+  box-shadow: 0 0 30px rgba(0,232,122,0.2);
+}
+.btn-primary:hover { transform: translateY(-2px); box-shadow: 0 0 50px rgba(0,232,122,0.35); }
+.btn-secondary {
+  background: transparent; color: var(--white);
+  padding: 16px 36px; border-radius: 8px;
+  font-family: var(--heading); font-weight: 600; font-size: 16px;
+  text-decoration: none; display: inline-block;
+  border: 1px solid var(--border); transition: border-color 0.2s;
+}
+.btn-secondary:hover { border-color: var(--muted); }
+
+/* TICKER */
+.ticker { border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); padding: 14px 0; overflow: hidden; background: var(--bg2); }
+.ticker-inner { display: flex; gap: 56px; white-space: nowrap; animation: ticker 25s linear infinite; width: max-content; }
+.ticker-item { display: inline-flex; align-items: center; gap: 10px; font-size: 13px; color: var(--muted); font-weight: 500; }
+.ticker-item b { color: var(--green); font-weight: 600; }
+@keyframes ticker { from{transform:translateX(0)} to{transform:translateX(-50%)} }
+
+/* SECTIONS */
+section { padding: 96px 24px; }
+.bg2 { background: var(--bg2); }
+.container { max-width: 1080px; margin: 0 auto; }
+.section-label { font-size: 12px; font-weight: 600; letter-spacing: 2.5px; text-transform: uppercase; color: var(--green); margin-bottom: 14px; }
+h2 { font-family: var(--heading); font-weight: 800; font-size: clamp(30px, 4.5vw, 50px); letter-spacing: -1px; line-height: 1.1; margin-bottom: 18px; }
+.section-sub { color: var(--muted); font-size: 18px; max-width: 500px; line-height: 1.7; }
+
+/* PROBLEM */
+.problem-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1px; background: var(--border); border: 1px solid var(--border); border-radius: 16px; overflow: hidden; margin-top: 56px; }
+.problem-card { background: var(--card); padding: 40px 36px; transition: background 0.2s; }
+.problem-card:hover { background: #161f1a; }
+.problem-icon { font-size: 30px; margin-bottom: 18px; }
+.problem-card h3 { font-family: var(--heading); font-weight: 700; font-size: 19px; margin-bottom: 12px; }
+.problem-card p { color: var(--muted); font-size: 15px; line-height: 1.65; }
+
+/* HOW */
+.steps { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 48px; margin-top: 56px; }
+.step-num { font-family: var(--heading); font-size: 56px; font-weight: 800; line-height: 1; margin-bottom: 16px; background: linear-gradient(135deg, var(--green) 0%, rgba(0,232,122,0.1) 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+.step h3 { font-family: var(--heading); font-weight: 700; font-size: 19px; margin-bottom: 10px; }
+.step p { color: var(--muted); font-size: 15px; line-height: 1.65; }
+
+/* FOR WHO */
+.for-who-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 16px; margin-top: 48px; }
+.for-who-card { background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 28px 20px; transition: border-color 0.2s, transform 0.2s; }
+.for-who-card:hover { border-color: var(--green-mid); transform: translateY(-4px); }
+.for-who-card .icon { font-size: 26px; margin-bottom: 12px; }
+.for-who-card h4 { font-family: var(--heading); font-weight: 700; font-size: 15px; }
+
+/* PRICING */
+.pricing-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 24px; margin-top: 56px; align-items: start; }
+.pricing-card { background: var(--card); border: 1px solid var(--border); border-radius: 16px; padding: 36px 32px; position: relative; transition: transform 0.2s; display: flex; flex-direction: column; }
+.pricing-card:hover { transform: translateY(-4px); }
+.pricing-card.featured { border-color: var(--green); background: linear-gradient(135deg, #131d18 0%, #0d1a11 100%); }
+.featured-badge { position: absolute; top: -12px; left: 50%; transform: translateX(-50%); background: var(--green); color: #000; font-size: 11px; font-weight: 700; padding: 4px 16px; border-radius: 100px; font-family: var(--heading); white-space: nowrap; }
+.pricing-name { font-family: var(--heading); font-weight: 700; font-size: 18px; margin-bottom: 8px; }
+.pricing-desc { color: var(--muted); font-size: 14px; margin-bottom: 24px; line-height: 1.5; }
+.pricing-price { font-family: var(--heading); font-weight: 800; font-size: 40px; letter-spacing: -1px; line-height: 1.1; margin-bottom: 4px; }
+.pricing-price span { font-size: 16px; font-weight: 400; color: var(--muted); }
+.pricing-setup { color: var(--muted); font-size: 13px; margin-bottom: 24px; }
+.pricing-features { list-style: none; margin-bottom: 28px; flex: 1; }
+.pricing-features li { display: flex; align-items: center; gap: 10px; padding: 9px 0; border-bottom: 1px solid var(--border); font-size: 14px; color: var(--muted); }
+.pricing-features li:last-child { border-bottom: none; }
+.check { color: var(--green); font-size: 15px; flex-shrink: 0; }
+.btn-pricing { display: block; text-align: center; padding: 14px; border-radius: 8px; font-family: var(--heading); font-weight: 700; font-size: 15px; text-decoration: none; transition: all 0.2s; margin-top: auto; }
+.btn-pricing-primary { background: var(--green); color: #000; }
+.btn-pricing-primary:hover { opacity: 0.85; }
+.btn-pricing-secondary { background: transparent; color: var(--white); border: 1px solid var(--border); }
+.btn-pricing-secondary:hover { border-color: var(--muted); }
+
+/* CTA */
+.cta-box { background: linear-gradient(135deg, #131d18, #0a140e); border: 1px solid var(--green-mid); border-radius: 24px; padding: 80px 40px; text-align: center; position: relative; overflow: hidden; }
+.cta-glow { position: absolute; bottom: -100px; left: 50%; transform: translateX(-50%); width: 500px; height: 300px; background: radial-gradient(circle, rgba(0,232,122,0.1) 0%, transparent 70%); pointer-events: none; }
+.cta-box h2 { margin-bottom: 14px; }
+.cta-box p { color: var(--muted); font-size: 18px; margin-bottom: 40px; line-height: 1.65; }
+
+/* LEGAL */
+.legal-page { display: none; padding: 120px 24px 80px; min-height: 100vh; }
+.legal-page.active { display: block; }
+.legal-content { max-width: 760px; margin: 0 auto; }
+.legal-content h1 { font-family: var(--heading); font-size: 40px; font-weight: 800; letter-spacing: -1px; margin-bottom: 40px; }
+.legal-content h2 { font-family: var(--heading); font-size: 20px; font-weight: 700; margin: 36px 0 12px; color: var(--white); }
+.legal-content p, .legal-content li { color: var(--muted); font-size: 15px; line-height: 1.75; margin-bottom: 12px; }
+.legal-content ul { padding-left: 20px; margin-bottom: 12px; }
+.legal-content a { color: var(--green); }
+.legal-field { background: var(--card); border: 1px solid var(--border); border-radius: 6px; padding: 8px 14px; color: var(--green); font-family: var(--body); font-size: 14px; display: inline-block; font-weight: 600; margin: 4px 0; }
+.back-btn { display: inline-flex; align-items: center; gap: 8px; color: var(--muted); text-decoration: none; font-size: 14px; font-weight: 500; margin-bottom: 40px; transition: color 0.2s; cursor: pointer; }
+.back-btn:hover { color: var(--white); }
+
+/* FOOTER */
+footer { border-top: 1px solid var(--border); padding: 32px 24px; }
+.footer-inner { max-width: 1080px; margin: 0 auto; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 16px; }
+footer p { color: var(--muted); font-size: 13px; }
+.footer-links { display: flex; gap: 24px; }
+.footer-links a { color: var(--muted); text-decoration: none; font-size: 13px; transition: color 0.2s; cursor: pointer; }
+.footer-links a:hover { color: var(--white); }
+
+@media (max-width: 768px) {
+  nav { padding: 16px 20px; }
+  .nav-links { display: none; }
+  section { padding: 60px 20px; }
+  .cta-box { padding: 48px 24px; }
+}
+</style>
+</head>
+<body>
+
+<nav>
+  <span class="logo" onclick="showMain()">re<span>order</span>ly</span>
+  <div class="nav-links">
+    <a href="#problem" onclick="showMain()">Das Problem</a>
+    <a href="#how" onclick="showMain()">So funktioniert's</a>
+    <a href="#pricing" onclick="showMain()">Preise</a>
+    <a href="#kontakt" onclick="showMain()" class="btn-nav">Gespräch buchen</a>
+  </div>
+</nav>
+
+<!-- MAIN -->
+<div id="main">
+
+  <section class="hero">
+    <div class="hero-glow"></div>
+    <div class="badge"><div class="badge-dot"></div>Automatische Nachbestellung für Händler</div>
+    <h1>Ihr Lager bestellt<br>sich <em>selbst</em> nach.</h1>
+    <p class="hero-sub">Reorderly analysiert täglich Ihre Verkäufe und schickt Ihnen morgens die fertigen Bestellempfehlungen — ohne Excel, ohne Bauchgefühl, ohne vergessene Artikel.</p>
+    <div class="hero-cta">
+      <a href="#kontakt" class="btn-primary">Kostenloses Erstgespräch →</a>
+      <a href="#how" class="btn-secondary">Wie funktioniert das?</a>
+    </div>
+  </section>
+
+  <div class="ticker">
+    <div class="ticker-inner">
+      <span class="ticker-item">✦ <b>Baustoffhandel</b></span>
+      <span class="ticker-item">✦ <b>Sanitär & Heizung</b></span>
+      <span class="ticker-item">✦ <b>Elektrogroßhandel</b></span>
+      <span class="ticker-item">✦ <b>Werkzeughandel</b></span>
+      <span class="ticker-item">✦ Kein IT-Aufwand</span>
+      <span class="ticker-item">✦ Fertig eingerichtet</span>
+      <span class="ticker-item">✦ Jeden Morgen automatisch</span>
+      <span class="ticker-item">✦ <b>Technischer Handel</b></span>
+      <span class="ticker-item">✦ <b>Baustoffhandel</b></span>
+      <span class="ticker-item">✦ <b>Sanitär & Heizung</b></span>
+      <span class="ticker-item">✦ <b>Elektrogroßhandel</b></span>
+      <span class="ticker-item">✦ <b>Werkzeughandel</b></span>
+      <span class="ticker-item">✦ Kein IT-Aufwand</span>
+      <span class="ticker-item">✦ Fertig eingerichtet</span>
+      <span class="ticker-item">✦ Jeden Morgen automatisch</span>
+      <span class="ticker-item">✦ <b>Technischer Handel</b></span>
+    </div>
+  </div>
+
+  <section id="problem">
+    <div class="container">
+      <div class="section-label">Das Problem</div>
+      <h2>Kennen Sie das?</h2>
+      <p class="section-sub">Jeder Händler mit 500+ Artikeln kämpft täglich mit denselben drei Problemen.</p>
+      <div class="problem-grid">
+        <div class="problem-card"><div class="problem-icon">📦</div><h3>Zu spät nachbestellt</h3><p>Der Artikel läuft aus, bevor jemand es merkt. Kunden warten, Liefertermine platzen, Umsatz geht verloren.</p></div>
+        <div class="problem-card"><div class="problem-icon">🏔️</div><h3>Zu viel auf Lager</h3><p>Aus Angst wird zu viel bestellt. Kapital liegt im Regal, Lagerkosten steigen, Liquidität sinkt.</p></div>
+        <div class="problem-card"><div class="problem-icon">🧠</div><h3>Alles im Kopf</h3><p>Der Einkäufer weiß "ungefähr" was gebraucht wird. Urlaub, Krankheit oder Wechsel — und das Wissen ist weg.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <section id="how" class="bg2">
+    <div class="container">
+      <div class="section-label">So funktioniert's</div>
+      <h2>Drei Schritte.<br>Jeden Morgen.</h2>
+      <p class="section-sub">Reorderly läuft vollautomatisch — Sie müssen nichts tun außer die E-Mail lesen.</p>
+      <div class="steps">
+        <div class="step"><div class="step-num">01</div><h3>Daten automatisch abrufen</h3><p>Reorderly zieht täglich Ihre Verkaufsdaten aus Ihrem System — per Export, API oder direkter Anbindung.</p></div>
+        <div class="step"><div class="step-num">02</div><h3>Reichweite berechnen</h3><p>Für jeden Artikel wird berechnet wie lange der Bestand reicht. Lieferzeiten, Mindestbestellmengen und Saisonalität inklusive.</p></div>
+        <div class="step"><div class="step-num">03</div><h3>Bestellliste per E-Mail</h3><p>Jeden Morgen landet eine fertige Bestellempfehlung in Ihrem Postfach — sortiert nach Lieferant, mit Mengen und Priorität.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <section id="fuer-wen">
+    <div class="container">
+      <div class="section-label">Für wen</div>
+      <h2>Gemacht für den<br>deutschen Mittelstand.</h2>
+      <p class="section-sub">Nicht für Konzerne mit SAP — für Händler die endlich Zeit sparen wollen.</p>
+      <div class="for-who-grid">
+        <div class="for-who-card"><div class="icon">🧱</div><h4>Baustoffhandel</h4></div>
+        <div class="for-who-card"><div class="icon">🔧</div><h4>Werkzeughandel</h4></div>
+        <div class="for-who-card"><div class="icon">🚿</div><h4>Sanitär & Heizung</h4></div>
+        <div class="for-who-card"><div class="icon">⚡</div><h4>Elektrogroßhandel</h4></div>
+        <div class="for-who-card"><div class="icon">⚙️</div><h4>Technischer Handel</h4></div>
+        <div class="for-who-card"><div class="icon">📦</div><h4>500–5.000 Artikel</h4></div>
+      </div>
+    </div>
+  </section>
+
+  <section id="pricing" class="bg2">
+    <div class="container">
+      <div class="section-label">Preise</div>
+      <h2>Transparent.<br>Keine Überraschungen.</h2>
+      <p class="section-sub">Einmal einrichten, monatlich profitieren. Kein Jahresvertrag im ersten Monat.</p>
+      <div class="pricing-grid">
+        <div class="pricing-card">
+          <div class="pricing-name">Starter</div>
+          <div class="pricing-desc">Für den Einstieg — ein Lieferant, ein System.</div>
+          <div class="pricing-price">149 <span>€/Monat</span></div>
+          <div class="pricing-setup">+ 499 € Einrichtung</div>
+          <ul class="pricing-features">
+            <li><span class="check">✓</span> Bis zu 500 Artikel</li>
+            <li><span class="check">✓</span> 1 Lieferant</li>
+            <li><span class="check">✓</span> Tägliche E-Mail</li>
+            <li><span class="check">✓</span> CSV / Excel Anbindung</li>
+            <li><span class="check">✓</span> E-Mail Support</li>
+          </ul>
+          <a href="#kontakt" class="btn-pricing btn-pricing-secondary">Gespräch buchen</a>
+        </div>
+        <div class="pricing-card featured">
+          <div class="featured-badge">⭐ Beliebteste Wahl</div>
+          <div class="pricing-name">Professional</div>
+          <div class="pricing-desc">Mehrere Lieferanten, komplexe Strukturen.</div>
+          <div class="pricing-price">249 <span>€/Monat</span></div>
+          <div class="pricing-setup">+ 799 € Einrichtung</div>
+          <ul class="pricing-features">
+            <li><span class="check">✓</span> Bis zu 2.000 Artikel</li>
+            <li><span class="check">✓</span> Unbegrenzte Lieferanten</li>
+            <li><span class="check">✓</span> Mindestbestellwerte & VE</li>
+            <li><span class="check">✓</span> ERP / Shop Anbindung</li>
+            <li><span class="check">✓</span> Prioritäts-Support</li>
+          </ul>
+          <a href="#kontakt" class="btn-pricing btn-pricing-primary">Jetzt starten</a>
+        </div>
+        <div class="pricing-card">
+          <div class="pricing-name">Enterprise</div>
+          <div class="pricing-desc">Individuelle Anforderungen, mehrere Standorte.</div>
+          <div class="pricing-price">Auf <span>Anfrage</span></div>
+          <div class="pricing-setup">Individuelle Einrichtung</div>
+          <ul class="pricing-features">
+            <li><span class="check">✓</span> Unbegrenzte Artikel</li>
+            <li><span class="check">✓</span> Mehrere Standorte</li>
+            <li><span class="check">✓</span> Custom Logik & Regeln</li>
+            <li><span class="check">✓</span> Direktanbindung ERP</li>
+            <li><span class="check">✓</span> Dedizierter Ansprechpartner</li>
+          </ul>
+          <a href="#kontakt" class="btn-pricing btn-pricing-secondary">Anfrage stellen</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="kontakt">
+    <div class="container">
+      <div class="cta-box">
+        <div class="cta-glow"></div>
+        <div class="section-label">Kostenloses Erstgespräch</div>
+        <h2>Bereit, den Einkauf<br>zu automatisieren?</h2>
+        <p>30 Minuten — wir schauen gemeinsam ob Reorderly für Sie passt.<br>Kein Verkaufsgespräch, kein Druck.</p>
+        <a href="mailto:hallo@reorderly.de" class="btn-primary">Termin vereinbaren →</a>
+      </div>
+    </div>
+  </section>
+
+</div><!-- /main -->
+
+<!-- IMPRESSUM -->
+<div id="impressum" class="legal-page">
+  <div class="legal-content">
+    <span class="back-btn" onclick="showMain()">← Zurück zur Startseite</span>
+    <h1>Impressum</h1>
+    <h2>Angaben gemäß § 5 TMG</h2>
+    <p><span class="legal-field">DEIN VOLLSTÄNDIGER NAME</span></p>
+    <p><span class="legal-field">STRAßE UND HAUSNUMMER</span></p>
+    <p><span class="legal-field">PLZ ORT</span></p>
+    <h2>Kontakt</h2>
+    <p>Telefon: <span class="legal-field">+49 DEINE NUMMER</span></p>
+    <p>E-Mail: <span class="legal-field">hallo@reorderly.de</span></p>
+    <h2>Umsatzsteuer-ID</h2>
+    <p>Umsatzsteuer-Identifikationsnummer gemäß § 27a UStG:</p>
+    <p><span class="legal-field">DE DEINE UST-ID (falls vorhanden)</span></p>
+    <h2>Verantwortlich für den Inhalt nach § 55 Abs. 2 RStV</h2>
+    <p><span class="legal-field">DEIN VOLLSTÄNDIGER NAME, STRAßE, PLZ ORT</span></p>
+    <h2>Streitschlichtung</h2>
+    <p>Die EU-Kommission stellt eine Plattform zur Online-Streitbeilegung bereit: <a href="https://ec.europa.eu/consumers/odr/">https://ec.europa.eu/consumers/odr/</a></p>
+    <p>Wir sind nicht verpflichtet, an Streitbeilegungsverfahren vor einer Verbraucherschlichtungsstelle teilzunehmen.</p>
+  </div>
+</div>
+
+<!-- DATENSCHUTZ -->
+<div id="datenschutz" class="legal-page">
+  <div class="legal-content">
+    <span class="back-btn" onclick="showMain()">← Zurück zur Startseite</span>
+    <h1>Datenschutzerklärung</h1>
+    <h2>1. Verantwortlicher</h2>
+    <p><span class="legal-field">DEIN VOLLSTÄNDIGER NAME</span><br>
+    <span class="legal-field">STRAßE, PLZ ORT</span><br>
+    E-Mail: <span class="legal-field">hallo@reorderly.de</span></p>
+    <h2>2. Hosting</h2>
+    <p>Diese Website wird über GitHub Pages (GitHub Inc., 88 Colin P Kelly Jr St, San Francisco, CA 94107, USA) gehostet. Beim Besuch werden Server-Logdaten gespeichert (IP-Adresse, Datum/Uhrzeit, aufgerufene Seite). Grundlage: Art. 6 Abs. 1 lit. f DSGVO.</p>
+    <h2>3. Schriftarten (Google Fonts)</h2>
+    <p>Diese Website nutzt Google Fonts (Google Ireland Limited, Gordon House, Barrow Street, Dublin 4, Irland). Dabei kann Ihre IP-Adresse an Google übertragen werden. Grundlage: Art. 6 Abs. 1 lit. f DSGVO. Weitere Infos: <a href="https://policies.google.com/privacy">Google Datenschutzrichtlinie</a>.</p>
+    <h2>4. Kontakt per E-Mail</h2>
+    <p>Wenn Sie uns per E-Mail kontaktieren, werden Ihre Daten zur Bearbeitung der Anfrage gespeichert und nicht ohne Ihre Einwilligung weitergegeben. Grundlage: Art. 6 Abs. 1 lit. b DSGVO.</p>
+    <h2>5. Ihre Rechte</h2>
+    <p>Sie haben das Recht auf Auskunft, Berichtigung, Löschung, Einschränkung der Verarbeitung und Datenübertragbarkeit. Kontakt: <span class="legal-field">hallo@reorderly.de</span></p>
+    <p>Sie haben das Recht, sich bei einer Datenschutz-Aufsichtsbehörde zu beschweren.</p>
+    <h2>6. Stand</h2>
+    <p>April 2025</p>
+  </div>
+</div>
+
+<footer>
+  <div class="footer-inner">
+    <span class="logo" onclick="showMain()" style="font-size:18px;">re<span>order</span>ly</span>
+    <p>© 2025 Reorderly · Automatische Nachbestellung für Händler</p>
+    <div class="footer-links">
+      <a onclick="showPage('impressum')">Impressum</a>
+      <a onclick="showPage('datenschutz')">Datenschutz</a>
+      <a href="mailto:hallo@reorderly.de">hallo@reorderly.de</a>
+    </div>
+  </div>
+</footer>
+
+<script>
+function showPage(id) {
+  document.getElementById('main').style.display = 'none';
+  document.querySelectorAll('.legal-page').forEach(p => p.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  window.scrollTo(0,0);
+}
+function showMain() {
+  document.getElementById('main').style.display = 'block';
+  document.querySelectorAll('.legal-page').forEach(p => p.classList.remove('active'));
+}
+</script>
+</body>
+</html>
